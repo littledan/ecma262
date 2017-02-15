@@ -22567,6 +22567,9 @@
       <li>
         When parsing for the |Module| goal symbol, the lexical grammar extensions defined in <emu-xref href="#sec-html-like-comments"></emu-xref> must not be supported.
       </li>
+      <li>
+        `String.prototype` may not have a property named `"blink"`.
+      </li>
     </ul>
   </emu-clause>
 </emu-clause>
@@ -38526,16 +38529,6 @@ THH:mm:ss.sss
         <emu-alg>
           1. Let _S_ be the *this* value.
           1. Return ? CreateHTML(_S_, `"big"`, `""`, `""`).
-        </emu-alg>
-      </emu-annex>
-
-      <!-- es6num="B.2.3.4" -->
-      <emu-annex id="sec-string.prototype.blink">
-        <h1>String.prototype.blink ( )</h1>
-        <p>When the `blink` method is called with no arguments, the following steps are taken:</p>
-        <emu-alg>
-          1. Let _S_ be the *this* value.
-          1. Return ? CreateHTML(_S_, `"blink"`, `""`, `""`).
         </emu-alg>
       </emu-annex>
 
