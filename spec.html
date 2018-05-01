@@ -905,23 +905,41 @@
       <h1>Mathematical Operations</h1>
       <p>This specification makes reference to three kinds of numeric values:</p>
       <ul>
+        <li><dfn>Safe integer</dfn>: Integers which are between -2<sub>ℝ</sub><sup>53</sup> + 1 and 2<sub>ℝ</sub><sup>53</sup> - 1.</li>
         <li><em>Number</em>: IEEE 754-2008 double-precision floating point values, as exposed to ECMAScript programs.</li>
         <li><dfn>Mathematical value</dfn>: Arbitrary real numbers.</li>
-        <li><dfn>Safe integer</dfn>: Integers which are between -2<sub>ℝ</sub><sup>53</sup> + 1 and 2<sub>ℝ</sub><sup>53</sup> - 1.</li>
       </ul>
 
-      <p>In the language of this specification, numerical values and operations (including addition, subtraction, negation, multiplication, addition, and comparison) are distinguished among different numeric kinds using subscripts. The subscript <sub><dfn id="𝔽">𝔽</dfn></sub> refers to Numbers, and the subscript <sub><dfn id="ℝ">ℝ</dfn></sub> refers to mathematical values. When a subscript is missing, a value or operation refers to a safe integer. Safe integers are used as the default internally in this specification, with Numbers and mathematical values for specific circumstances.</p>
-      <p>Operations such as addition, comparison, etc must have operands of compatible numeric kinds--either both operands must be mathematical values, both Numbers, or at least one operand a safe integer. On mathematical values, operations are interpreted to have their ordinary defintion as real numbers; on Numbers, operations are interpreted to be defined by IEEE 754-2008. If one operand is a safe integer and the other is a specific kind, then the kind of the well-defined operand, in effect, determines the kind of the whole expression. For example, 1<sub>ℝ</sub> + 2 = 3 is a statement about mathematical values, and 1<sub>𝔽</sub> + 2 = 3 is a statement about Numbers. It is not defined to mix Numbers and mathematical values in either arithmetic or comparison operations, and any such undefined operation would be an editorial error in this specification text. An operation on two safe integers includes an implicit assertion that the result is also a safe integer, i.e., that the result would be the same when interpreted as a Number and as a mathematical value; otherwise, the use of the operation is considered an error in the specification.</p>
-      <p>This specification denotes most numeric values in base 10; it also uses numeric values of the form 0x followed by digits 0-9 or A-F as base-16 values.</p>
-      <p>Conversions between mathematical values and numbers are never implicit, and always explicit in this document. A conversion from a mathematical value to a Number is denoted as 𝔽(_x_). A conversion from a Number to a mathematical value is denoted as ℝ(_x_). Note that, for a mathematical value _x_, ℝ(_x_) is not defined if _x_ is non-finite, and ℝ(*+0*) and ℝ(*-0*) is the mathematical value 0<sub>ℝ</sub>. There is no operation to do a conversion to a safe integer, but integers can be used in contexts which require either Numbers or Mathematical Values, as they are part of the intersection of those two sets. No other implicit conversions take place.</p>
-      <p>This specification uses the term <dfn id="integer">integer</dfn> as shorthand for safe integer. The term <dfn>mathematical integer</dfn> refers to a mathematical value which is in the set of integers.</p>
-      <p>The function <emu-eqn id="eqn-abs" aoid="abs">abs(_x_)</emu-eqn> produces the absolute value of _x_, which is <emu-eqn>-_x_</emu-eqn> if _x_ &lt; 0 and otherwise is _x_ itself.</p>
-      <p>The function <emu-eqn id="eqn-min" aoid="min">min(_x1_, _x2_, ..., _xN_)</emu-eqn> produces the mathematically smallest of <emu-eqn>_x1_</emu-eqn> through <emu-eqn>_xN_</emu-eqn>. The mathematical function <emu-eqn id="eqn-max" aoid="max">max(_x1_, _x2_, ..., _xN_)</emu-eqn> produces the mathematically largest of <emu-eqn>_x1_</emu-eqn> through <emu-eqn>_xN_</emu-eqn>. The domain and range of these mathematical functions include *+&infin;* and *-&infin;*.</p>
-      <p>The notation &ldquo;<emu-eqn id="eqn-modulo" aoid="modulo">_x_ modulo _y_</emu-eqn>&rdquo; (_y_ must be finite and nonzero) computes a value _k_ of the same sign as _y_ (or zero) such that <emu-eqn>abs(_k_) &lt; abs(_y_) and _x_-_k_ = _q_ &times; _y_</emu-eqn> for some integer _q_.</p>
-      <p>The function <emu-eqn id="eqn-floor" aoid="floor">floor(_x_)</emu-eqn> produces the largest integer (closest to positive infinity) that is not larger than _x_.</p>
-      <emu-note>
-        <p><emu-eqn>floor(_x_) = _x_-(_x_ modulo 1)</emu-eqn>.</p>
-      </emu-note>
+      <emu-clause id=sec-numeric-literals-and-conversions>
+        <h1>Numeric literals and conversions</h1>
+        <p>This specification denotes most numeric values in base 10; it also uses numeric values of the form 0x followed by digits 0-9 or A-F as base-16 values. Literals with no subscript are taken to be safe integers. Literal nummeric values with the subscript <sub><dfn id="𝔽">𝔽</dfn></sub> are Numbers, and those with the subscript <sub><dfn id="ℝ">ℝ</dfn></sub> are mathematical values.</p>
+        <p>Conversions between mathematical values and numbers are never implicit, and always explicit in this document. A conversion from a mathematical value to a Number is denoted as 𝔽(_x_). A conversion from a Number to a mathematical value is denoted as ℝ(_x_). Note that, for a mathematical value _x_, ℝ(_x_) is not defined if _x_ is non-finite, and ℝ(*+0*) and ℝ(*-0*) is the mathematical value 0<sub>ℝ</sub>. There is no operation to do a conversion to a safe integer, but integers can be used in contexts which require either Numbers or mathematical values, as described below.</p>
+        <p>This specification uses the term <dfn id="integer">integer</dfn> as shorthand for safe integer. The term <dfn>mathematical integer</dfn> refers to a mathematical value which is in the set of integers.</p>
+        <p>Safe integers can be exposed to ECMAScript code, having the semantics of their associated Number values.</p>
+      </emu-clause>
+
+      <emu-clause id=sec-numeric-operators>
+        <h1>Numeric operators</h1>
+        <p>Like values, numeric operators (including addition, subtraction, negation, multiplication, addition) are distinguished among different numeric kinds using subscripts. Operators have the following semantics given subscripts:</p>
+        <ul>
+          <li>With no subscript, an operation is interpreted to be on safe integers. Both operands and the result are asserted to be safe integers.</li>
+          <li>With the 𝔽 subscript, this is an operation on Numbers. Operands are asserted to be either Numbers or safe integers, with the result calculated according to IEEE 754, with settings matching the execution of ECMAScript source.</li>
+          <li>With the ℝ subscript, this is an operation on mathematical values. Operands are asserted to be either mathematical values or safe integers, and the result is calculated according to the typical rules of mathematics on real numbers.</li>
+        </ul>
+        <p>The exponentiation operator is written ** in order to permit attaching the appropriate subscript.</p>
+        <p>Comparisons, e.g., =, &ne;, &lt;, &ge;, etc, are defined as being evaluated on the mathematical value of both operands. The predicate "is", when used on two numeric values, compares them both as Numbers with the SameValue operation, converting any operand which is a safe integer to a Number as the first step, and asserting that neither operand is a mathematical value.</p>
+      </emu-clause>
+
+      <emu-clause id=sec-numeric-functions>
+        <h1>Numeric functions</h1>
+        <p>The function <emu-eqn id="eqn-abs" aoid="abs">abs(_x_)</emu-eqn> produces the absolute value of _x_, which is <emu-eqn>-_x_</emu-eqn> if _x_ &lt; 0 and otherwise is _x_ itself.</p>
+        <p>The function <emu-eqn id="eqn-min" aoid="min">min(_x1_, _x2_, ..., _xN_)</emu-eqn> produces the mathematically smallest of <emu-eqn>_x1_</emu-eqn> through <emu-eqn>_xN_</emu-eqn>. The mathematical function <emu-eqn id="eqn-max" aoid="max">max(_x1_, _x2_, ..., _xN_)</emu-eqn> produces the mathematically largest of <emu-eqn>_x1_</emu-eqn> through <emu-eqn>_xN_</emu-eqn>. The domain and range of these mathematical functions include *+&infin;* and *-&infin;*.</p>
+        <p>The notation &ldquo;<emu-eqn id="eqn-modulo" aoid="modulo">_x_ modulo _y_</emu-eqn>&rdquo; (_y_ must be finite and nonzero) computes a value _k_ of the same sign as _y_ (or zero) such that <emu-eqn>abs(_k_) &lt; abs(_y_) and _x_-_k_ = _q_ &times; _y_</emu-eqn> for some integer _q_.</p>
+        <p>The function <emu-eqn id="eqn-floor" aoid="floor">floor(_x_)</emu-eqn> produces the largest integer (closest to positive infinity) that is not larger than _x_.</p>
+        <emu-note>
+          <p><emu-eqn>floor(_x_) = _x_-(_x_ modulo 1)</emu-eqn>.</p>
+        </emu-note>
+      </emu-clause>
     </emu-clause>
   </emu-clause>
 </emu-clause>
@@ -27450,9 +27468,9 @@
       <emu-clause id="sec-day-number-and-time-within-day">
         <h1>Day Number and Time within Day</h1>
         <p>A given time value _t_ belongs to day number</p>
-        <emu-eqn id="eqn-Day" aoid="Day">Day(_t_) = floor(_t_ / msPerDay)</emu-eqn>
+        <emu-eqn id="eqn-Day" aoid="Day">Day(_t_) = floor(_t_ /<sub>𝔽</sub> msPerDay)</emu-eqn>
         <p>where the number of milliseconds per day is</p>
-        <emu-eqn id="eqn-msPerDay" aoid="msPerDay">msPerDay = 86400000<sub>𝔽</sub></emu-eqn>
+        <emu-eqn id="eqn-msPerDay" aoid="msPerDay">msPerDay = 86400000</emu-eqn>
         <p>The remainder is called the time within the day:</p>
         <emu-eqn id="eqn-TimeWithinDay" aoid="TimeWithinDay">TimeWithinDay(_t_) = _t_ modulo msPerDay</emu-eqn>
       </emu-clause>
@@ -27574,9 +27592,9 @@
       <emu-clause id="sec-hours-minutes-second-and-milliseconds">
         <h1>Hours, Minutes, Second, and Milliseconds</h1>
         <p>The following abstract operations are useful in decomposing time values:</p>
-        <emu-eqn id="eqn-HourFromTime" aoid="HourFromTime">HourFromTime(_t_) = floor(_t_ / msPerHour) modulo HoursPerDay</emu-eqn>
-        <emu-eqn id="eqn-MinFromTime" aoid="MinFromTime">MinFromTime(_t_) = floor(_t_ / msPerMinute) modulo MinutesPerHour</emu-eqn>
-        <emu-eqn id="eqn-SecFromTime" aoid="SecFromTime">SecFromTime(_t_) = floor(_t_ / msPerSecond) modulo SecondsPerMinute</emu-eqn>
+        <emu-eqn id="eqn-HourFromTime" aoid="HourFromTime">HourFromTime(_t_) = floor(_t_ /<sub>𝔽</sub> msPerHour) modulo HoursPerDay</emu-eqn>
+        <emu-eqn id="eqn-MinFromTime" aoid="MinFromTime">MinFromTime(_t_) = floor(_t_ /<sub>𝔽</sub> msPerMinute) modulo MinutesPerHour</emu-eqn>
+        <emu-eqn id="eqn-SecFromTime" aoid="SecFromTime">SecFromTime(_t_) = floor(_t_ /<sub>𝔽</sub> msPerSecond) modulo SecondsPerMinute</emu-eqn>
         <emu-eqn id="eqn-msFromTime" aoid="msFromTime">msFromTime(_t_) = _t_ modulo msPerSecond</emu-eqn>
         <p>where</p>
         <emu-eqn id="eqn-HoursPerDay" aoid="HoursPerDay">HoursPerDay = 24<sub>𝔽</sub></emu-eqn>
