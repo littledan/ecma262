@@ -6502,10 +6502,10 @@
     <h1>Jobs and Host Operations to Enqueue Jobs</h1>
     <p>A <dfn>Job</dfn> is an abstract operation that initiates an ECMAScript computation when no other ECMAScript computation is currently in progress. A Job abstract operation may be defined to accept an arbitrary set of job parameters.</p>
 
-    <p>Jobs are scheduled for execution by ECMAScript host environments with abstract operations such as HostEnqueuePromiseJob. Such operations accept two parameters: _job_, an abstract operation, and _arguments_, a list of ECMAScript values. These abstract operations schedule _job_ to be performed with _arguments_ at some future time. Their implementations must conform to the following requirements:</p>
+    <p>An agent schedules jobs for execution in response to invocations of abstract operations such as HostEnqueuePromiseJob. Such operations accept two parameters: _job_, an abstract operation, and _arguments_, a list of ECMAScript values. These abstract operations schedule _job_ to be performed with _arguments_ at some future time. More specifically:</p>
 
     <ul>
-      <li>At some future point in time, when there is no running execution context and the execution context stack is empty, the implementation must:
+      <li>At some future point in time, when the agent's execution context stack is empty, and thus there is no running execution context, the agent must:
         <ol>
           <li>Push an execution context onto the execution context stack.</li>
           <li>Perform any implementation-defined preparation steps.</li>
@@ -6514,16 +6514,15 @@
           <li>Pop the previously-pushed execution context from the execution context stack.</li>
         </ol>
       </li>
-      <li>Only one Job may be actively undergoing evaluation at any point in time.</li>
-      <li>Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts.</li>
+      <li>Once evaluation of a Job starts, it must run to completion before the agent starts the evaluation of any other Job.</li>
     </ul>
 
     <emu-clause id="sec-hostenqueuepromisejob" aoid="HostEnqueuePromiseJob">
       <h1>HostEnqueuePromiseJob ( _job_, _arguments_ )</h1>
 
-      <p>HostEnqueuePromiseJob is a host-defined abstract operation that schedules the abstract operation indicated by _job_ to be performed, with the arguments _arguments_, at some future time. The Jobs used with this algorithm are intended to be related to the handling of Promises, or otherwise, to be scheduled with equal priority to Promise handling operations.</p>
+      <p>HostEnqueuePromiseJob is a host-defined abstract operation that causes the surrounding agent to schedule the future execution of the abstract operation indicated by _job_, with the arguments _arguments_. The Jobs used with this algorithm are intended to be related to the handling of Promises, or otherwise, to be scheduled with equal priority to Promise handling operations.</p>
 
-      <p>The implementation of HostEnqueuePromiseJob must conform to the requirements in <emu-xref href="#sec-jobs-and-job-queues"></emu-xref>. Additionally, Jobs must be scheduled in FIFO order, with Jobs running in the same order as the HostEnqueuePromiseJob invocations which scheduled them.</p>
+      <p>The implementation of HostEnqueuePromiseJob must conform to the requirements in <emu-xref href="#sec-jobs-and-job-queues"></emu-xref>. Additionally, Jobs must be scheduled in FIFO order, with Jobs running in the same order as the HostEnqueuePromiseJob invocations that scheduled them.</p>
     </emu-clause>
   </emu-clause>
 
@@ -22650,7 +22649,6 @@
         </emu-note>
       </emu-clause>
 
-      <!-- es6num="15.2.1.20" -->
       <emu-clause id="sec-module-semantics-runtime-semantics-evaluation">
         <h1>Runtime Semantics: Evaluation</h1>
         <emu-grammar>Module : [empty]</emu-grammar>
@@ -23292,7 +23290,6 @@
     </li>
   </ul>
 
-  <!-- es6num="16.1" -->
   <emu-clause id="sec-forbidden-extensions">
     <h1>Forbidden Extensions</h1>
     <p>An implementation must not extend this specification in the following ways:</p>
