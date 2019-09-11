@@ -6616,6 +6616,41 @@
       <p>An agent is a specification mechanism and need not correspond to any particular artefact of an ECMAScript implementation.</p>
     </emu-note>
 
+    <emu-clause id="sec-agent-behaviour">
+      <h1>Agent Behaviour</h1>
+      <p>From the perspective of an ECMAScript implementation, an agent is expected to perform zero or more invocations of these <em>top-level</em> operations:</p>
+      <ul>
+        <li>InitializeHostDefinedRealm</li>
+        <li>ParseScript</li>
+        <li>ScriptEvaluation</li>
+        <li>ParseModule</li>
+        <li>_module_.Link</li>
+        <li>_module_.Evaluate</li>
+      </ul>
+      <p>These invocations must conform to two ordering constraints:</p>
+      <ul>
+        <li>
+          <p>InitializeHostDefinedRealm &lt;- ParseScript &lt;- ScriptEvaluation</p>
+          <p>An invocation of ScriptEvaluation on a particular Script Record must be preceded by an invocation of ParseScript that returns that Script Record, which in turn must be preceded by an invocation of InitializeHostDefinedRealm that returns the Realm Record passed to ParseScript.</p>
+        </li>
+        <li>
+          <p>InitializeHostDefinedRealm &lt;- ParseModule &lt;- Link &lt;- Evaluate</p>
+          <p>An invocation of Evaluate on a Module Record must be preceded by a successful invocation of Link on the same Module Record, which must be preceded by a invocation of ParseModule that returns the Module Record, which must be preceded by an invocation of InitializeHostDefinedRealm that returns the Realm Record passed to ParseModule.</p>
+        </li>
+      </ul>
+      <p>In the above, "preceded" does not mean "immediately preceded", but merely "preceded at some earlier time".</p>
+      <emu-note>
+        <p>The constraints are expressed backwards in time, not forwards. For example, a call to InitializeHostDefinedRealm that returns a Realm Record need not be followed by any calls to ParseScript or ParseModule with that Realm Record. Conversely, a single call to InitializeHostDefinedRealm might supply the Realm Record for multiple calls to ParseScript and/or ParseModule.</p>
+      </emu-note>
+      <emu-note>
+        <p>Calls involving different Realm Records, Script Records, and Module Records can be interleaved arbitrarily as long as they conform to the above constraints.</p>
+      </emu-note>
+      <p>It is implementation-defined how the agent acquires or constructs any source texts passed to ParseScript or ParseModule.</p>
+      <p>It is implementation-defined how the agent behaves if an operation returns an abrupt completion or other abnormal result.</p>
+
+      <p>Invocations of the top-level operations may cause the ECMAScript implementation to request (e.g., via HostEnqueuePromiseJob) that the agent schedule jobs for later execution. Execution of these jobs may in turn cause further jobs to be scheduled. The execution of all of these jobs must conform to the constraints described in <emu-xref href="#sec-jobs-and-job-queues"></emu-xref>, but this specification does not further constrain the ordering of invocations of top-level operations and jobs.</p>
+    </emu-clause>
+
     <emu-clause id="sec-agentsignifier" aoid="AgentSignifier">
       <h1>AgentSignifier ( )</h1>
       <p>The abstract operation AgentSignifier takes no arguments. It performs the following steps:</p>
